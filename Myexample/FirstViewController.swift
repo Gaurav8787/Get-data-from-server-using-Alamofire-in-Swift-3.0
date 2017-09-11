@@ -27,12 +27,12 @@ class FirstViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         //mytbaleView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        callGetMethod()
+        callPostMethod()
     }
     
         func callGetMethod(){
             
-            Alamofire.request("http://apidev.accuweather.com/currentconditions/v1/202438.json?language=en&apikey=hoArfRosT1215").responseJSON {
+            Alamofire.request("http://apidev.accuweather.com/currentconditions/v1/202438.json?language=en&apikey=hoArfRosT1215",method:.get).responseJSON {
                 response in
                 
                 switch response.result {
@@ -48,52 +48,44 @@ class FirstViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                     print("Error: \(error)")
                 }
                 
-                 do {
-                    
-//                    if let data = response.data {
-//                        
-//                        if let utf8Text = String(data: data, encoding: .utf8) {
-//                            print("Data: \(utf8Text)") // original server data as UTF8 string
-                    
-                            
-                         //   if let json = response.result.value {
-                    
-//                    var json: [Any]?
-//                    do {
-//                        json = try JSONSerialization.jsonObject(with: Res, options: <#T##JSONSerialization.ReadingOptions#>))
-//                    } catch {
-//                        print(error)
-//                    }
-//                    
-//                                print("JSON: \(json)") // serialized json response
-//                                
-//                                guard let item = json as? [String: Any],
-//                                    let person = item["person"] as? [String: Any],
-//                                    let age = person["age"] as? Int else {
-//                                        return
-//                                }
-//                                
-                    
-                                
-                       //     }
-                            
-                            
-                            
-                            
-                      //  }
-                        
-                   // }
-                    
-                    
-                 } catch{
-                    
-                }
-                
-
-                
-        }
+            }
             
         }
+    
+    func callPostMethod(){
+        
+        let activity = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+        view.addSubview(activity)
+        activity.center=view.center
+        activity.startAnimating()
+        
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        
+        let parametersDic:Parameters = ["key":"cb784502bffab6e"]
+        
+        Alamofire.request("http://date.jsontest.com/",method:.post,parameters:parametersDic).responseJSON {
+            response in
+            
+            print(response.result.value)
+            
+            switch response.result {
+            case .success:
+                if let objJson = response.result.value as! NSDictionary! {
+                    
+                    print(objJson["date"] ?? "nothing");
+                    
+                }
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+            
+            activity.stopAnimating()
+            activity.removeFromSuperview()
+            UIApplication.shared.endIgnoringInteractionEvents()
+        }
+        
+    }
+
     
     func convertToDictionary(from text: String) throws -> [String: String]? {
         guard let data = text.data(using: .utf8) else { return [:] }
